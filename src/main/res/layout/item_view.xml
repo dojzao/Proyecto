@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/item_v">
+
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:srcCompat="@android:drawable/checkbox_off_background"
+        android:id="@+id/imageBox"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:text="Super"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textsuper"
+        android:textSize="14sp"
+        android:layout_below="@+id/nombre"
+        android:layout_toRightOf="@+id/img"
+        android:layout_toEndOf="@+id/img" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/precio"
+        android:textSize="18sp"
+        tools:textStyle="bold"
+        android:textStyle="bold"
+        android:text="Precio"
+        android:layout_below="@+id/textsuper"
+        android:layout_alignLeft="@+id/textsuper"
+        android:layout_alignStart="@+id/textsuper" />
+
+    <TextView
+        android:text=" Producto:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:textSize="18sp"
+        android:textStyle="normal|bold|italic"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/nombre"
+        android:textSize="18sp"
+        android:text="nombre"
+        android:layout_below="@+id/textView"
+        android:layout_alignLeft="@+id/textsuper"
+        android:layout_alignStart="@+id/textsuper" />
+
+    <ImageView
+        android:layout_width="48dp"
+        android:id="@+id/img"
+        android:src="@android:drawable/menuitem_background"
+        android:layout_height="64dp"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+</RelativeLayout>

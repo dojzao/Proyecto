@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="cabecera_tabla">
+        <item>Imagen</item>
+        <item>Producto</item>
+        <item>Descripcion</item>
+        <item>Precio</item>
+        <item>Comprado</item>
+    </string-array>
+</resources>
