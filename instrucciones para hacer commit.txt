@@ -1,0 +1,5 @@
+instrucciones
+
+git add .
+git commit -m "mensaje obligatorio"
+git push
