@@ -3,21 +3,17 @@ package com.example.degoj.proyecto;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -25,7 +21,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -47,19 +42,18 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static com.example.degoj.proyecto.R.id.textMarca;
+import static com.example.degoj.proyecto.R.id.textNombre;
+import static com.example.degoj.proyecto.R.id.textPrecio;
 
 public class AgregarProducto extends AppCompatActivity {
 
-    private static String APP_DIRECTORY = "MyPictureApp/";
-    private static String MEDIA_DIRECTORY = APP_DIRECTORY + "PictureApp";
-
     private final int MY_PERMISSIONS = 100;
-    private final int PHOTO_CODE = 200;
+    private final int PHOTO_CODE = 111;
     private final int SELECT_PICTURE = 300;
 
     RelativeLayout l;
@@ -120,32 +114,32 @@ public class AgregarProducto extends AppCompatActivity {
         storage = FirebaseStorage.getInstance().getReference();
         progress = new ProgressDialog(this);
 
-        TextView textNombre = (TextView) findViewById(R.id.textNombre);
-        TextView textMarca = (TextView) findViewById(R.id.textMarca);
-        TextView textPrecio = (TextView) findViewById(R.id.textPrecio);
+        TextView campotextNombre = (TextView) findViewById(textNombre);
+        TextView campotextMarca = (TextView) findViewById(textMarca);
+        TextView campotextPrecio = (TextView) findViewById(textPrecio);
         TextView textCantidad = (TextView) findViewById(R.id.textCant);
         ImageView imagenProd = (ImageView) findViewById(R.id.imagenProducto);
 
-        textMarca.setBackgroundResource(R.drawable.lost_border);
-        textNombre.setBackgroundResource(R.drawable.lost_border);
-        textPrecio.setBackgroundResource(R.drawable.lost_border);
+        campotextMarca.setBackgroundResource(R.drawable.lost_border);
+        campotextNombre.setBackgroundResource(R.drawable.lost_border);
+        campotextPrecio.setBackgroundResource(R.drawable.lost_border);
         textCantidad.setBackgroundResource(R.drawable.lost_border);
 
         if(vg.getPos() > -1){
             MODO_EDITAR = true;
             imagenProd.setImageDrawable(vg.getMyProducts().get(vg.getPos()).getImagen());
-            textNombre.setText(vg.getMyProducts().get(vg.getPos()).getNombre());
-            textMarca.setText(vg.getMyProducts().get(vg.getPos()).getMarca());
-            textPrecio.setText(String.valueOf(vg.getMyProducts().get(vg.getPos()).getPrecio()));
+            campotextNombre.setText(vg.getMyProducts().get(vg.getPos()).getNombre());
+            campotextMarca.setText(vg.getMyProducts().get(vg.getPos()).getMarca());
+            campotextPrecio.setText(String.valueOf(vg.getMyProducts().get(vg.getPos()).getPrecio()));
             textCantidad.setText(String.valueOf(vg.getMyProducts().get(vg.getPos()).getCant()));
 
-            textNombre.setEnabled(false);
-            textMarca.setEnabled(false);
+            campotextNombre.setEnabled(false);
+            campotextMarca.setEnabled(false);
             textCantidad.setEnabled(false);
         }else{
             MODO_EDITAR = false;
-            textNombre.setEnabled(true);
-            textMarca.setEnabled(true);
+            campotextNombre.setEnabled(true);
+            campotextMarca.setEnabled(true);
             textCantidad.setEnabled(true);
         }
 
@@ -153,20 +147,20 @@ public class AgregarProducto extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final TextView textNombre = (TextView) findViewById(R.id.textNombre);
-                final TextView textMarca = (TextView) findViewById(R.id.textMarca);
-                final TextView textPrecio = (TextView) findViewById(R.id.textPrecio);
+                final TextView campotextNombre = (TextView) findViewById(textNombre);
+                final TextView campotextMarca = (TextView) findViewById(textMarca);
+                final TextView campotextPrecio = (TextView) findViewById(textPrecio);
                 final TextView textCantidad = (TextView) findViewById(R.id.textCant);
 
-                textMarca.setBackgroundResource(R.drawable.lost_border);
-                textNombre.setBackgroundResource(R.drawable.lost_border);
-                textPrecio.setBackgroundResource(R.drawable.lost_border);
+                campotextMarca.setBackgroundResource(R.drawable.lost_border);
+                campotextNombre.setBackgroundResource(R.drawable.lost_border);
+                campotextPrecio.setBackgroundResource(R.drawable.lost_border);
                 textCantidad.setBackgroundResource(R.drawable.lost_border);
 
                 try {
-                    String nombre = textNombre.getText().toString();
-                    String marca = textMarca.getText().toString();
-                    double precio = Double.parseDouble(textPrecio.getText().toString());
+                    String nombre = campotextNombre.getText().toString();
+                    String marca = campotextMarca.getText().toString();
+                    double precio = Double.parseDouble(campotextPrecio.getText().toString());
                     int cant = Integer.parseInt(textCantidad.getText().toString());
                     String SuperM = sprCoun.getSelectedItem().toString();
                     String ImagenBD = nombre + "_" + marca;
@@ -174,10 +168,10 @@ public class AgregarProducto extends AppCompatActivity {
                     if(!yaimagen && !MODO_EDITAR){
                         Toast.makeText(getApplicationContext(),"No ha selecionado una imagen",Toast.LENGTH_LONG).show();
                     }else if(marca.equals("")){
-                        textMarca.setBackgroundResource(R.drawable.focus_border_style);
+                        campotextMarca.setBackgroundResource(R.drawable.focus_border_style);
                         Toast.makeText(getApplicationContext(),"La marca no puede ser vacia",Toast.LENGTH_LONG).show();
                     }else if(nombre.equals("")){
-                        textNombre.setBackgroundResource(R.drawable.focus_border_style);
+                        campotextNombre.setBackgroundResource(R.drawable.focus_border_style);
                         Toast.makeText(getApplicationContext(),"El nombre no puede ser vacio",Toast.LENGTH_LONG).show();
                     }else {
                         progress.setMessage("uploading");
@@ -190,9 +184,9 @@ public class AgregarProducto extends AppCompatActivity {
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                     progress.dismiss();
                                     Toast.makeText(getApplicationContext(), "Agregado Correctamente", Toast.LENGTH_LONG).show();
-                                    textMarca.setText("");
-                                    textNombre.setText("");
-                                    textPrecio.setText("");
+                                    campotextMarca.setText("");
+                                    campotextNombre.setText("");
+                                    campotextPrecio.setText("");
                                     textCantidad.setText("");
                                     ImageView Mi_imageview = (ImageView) findViewById(R.id.imagenProducto);
                                     Mi_imageview.setImageResource(R.drawable.imgvacia);
@@ -206,9 +200,9 @@ public class AgregarProducto extends AppCompatActivity {
                     }
                 }catch (NumberFormatException ex){
                     if(MODO_EDITAR){
-                        textPrecio.setBackgroundResource(R.drawable.focus_border_style);
+                        campotextPrecio.setBackgroundResource(R.drawable.focus_border_style);
                     }else{
-                        textPrecio.setBackgroundResource(R.drawable.focus_border_style);
+                        campotextPrecio.setBackgroundResource(R.drawable.focus_border_style);
                         textCantidad.setBackgroundResource(R.drawable.focus_border_style);
                     }
                     Toast.makeText(getApplicationContext(),"No se permiten letras ni espacios vacios en estos campos",Toast.LENGTH_LONG).show();
@@ -298,26 +292,11 @@ public class AgregarProducto extends AppCompatActivity {
         return true;
     }
 
-    private void openCamera() {
-        File file = new File(Environment.getExternalStorageDirectory(), MEDIA_DIRECTORY);
-        boolean isDirectoryCreated = file.exists();
-
-        if(!isDirectoryCreated) {
-            file.mkdirs();
+    public void openCamera() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getApplication().getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, 111);
         }
-
-        //if(isDirectoryCreated){
-           // MensajeOK("Llego2");
-            Long timestamp = System.currentTimeMillis() / 1000;
-            String imageName = timestamp.toString() + ".jpg";
-
-            mPath = Environment.getExternalStorageDirectory() + File.separator + MEDIA_DIRECTORY + File.separator + imageName;
-
-            File newFile = new File(mPath);
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(newFile));
-            startActivityForResult(intent, PHOTO_CODE);
-        //}
     }
 
     @Override
@@ -329,7 +308,6 @@ public class AgregarProducto extends AppCompatActivity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-
         mPath = savedInstanceState.getString("file_path");
     }
 
@@ -340,21 +318,13 @@ public class AgregarProducto extends AppCompatActivity {
         if(resultCode == RESULT_OK){
             switch (requestCode){
                 case PHOTO_CODE:
-                    MediaScannerConnection.scanFile(this,
-                            new String[]{mPath}, null,
-                            new MediaScannerConnection.OnScanCompletedListener() {
-                                @Override
-                                public void onScanCompleted(String path, Uri uri) {
-                                    Log.i("ExternalStorage", "Scanned " + path + ":");
-                                    Log.i("ExternalStorage", "-> Uri = " + uri);
-                                }
-                            });
-
-                    Bitmap bitmap = BitmapFactory.decodeFile(mPath);
-                    MiImageView.setImageBitmap(bitmap);
-                    path = getImageUri(AgregarProducto.this, bitmap);
+                    Bundle extras = data.getExtras();
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    MiImageView.setImageBitmap(imageBitmap);
+                    encodeBitmapAndSaveToFirebase(imageBitmap);
                     yaimagen = true;
                     break;
+
                 case SELECT_PICTURE:
                     path = data.getData();
                     MiImageView.setImageURI(path);
@@ -363,11 +333,11 @@ public class AgregarProducto extends AppCompatActivity {
         }
     }
 
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
+    public void encodeBitmapAndSaveToFirebase(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        String routepath = MediaStore.Images.Media.insertImage(AgregarProducto.this.getContentResolver(), bitmap, "Title", null);
+        path = Uri.parse(routepath);
     }
 
     @Override
