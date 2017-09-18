@@ -1,94 +1,122 @@
 package com.example.degoj.proyecto;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
-public class InicioSesion extends AppCompatActivity {
+public class InicioSesion extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseAuth mAuth;
+
+    private GoogleApiClient mGoogleApiClient;
+    private Button GoogleButton;
+    private static final int SIGN_IN_CODE = 777;
+
+    private ProgressBar progressBarGoogle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inicio_sesion);
 
-        final EditText nombre = (EditText) findViewById(R.id.editText);
-        final EditText password = (EditText) findViewById(R.id.editText2);
+        getSupportActionBar().hide();
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+        mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user != null ){
-                    MensajeOK("Entro");
-                }else{
-                    MensajeOK("No entro");
-                }
             }
         };
 
-        TextView MiTextView = (TextView) findViewById(R.id.TextRegistro);
-        MiTextView.setOnClickListener(new View.OnClickListener(){
+        GoogleButton = (Button) findViewById(R.id.signInGoogle);
+        GoogleButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View arg0) {
-                Intent intento = new Intent(getApplicationContext(), Registro.class);
-                startActivity(intento);
+                progressBarGoogle.setVisibility(View.VISIBLE);
+                GoogleButton.setVisibility(View.GONE);
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, SIGN_IN_CODE);
             }
         });
 
-        Button MiButton = (Button) findViewById(R.id.btnSesion);
-        MiButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View arg0) {
-                if(nombre.getText().toString().equals("") || password.getText().toString().equals("")){
-                    MensajeOK("No se permiten espacios vacios");
-                }else {
-                    IniciarSesion(nombre.getText().toString(), password.getText().toString());
-                }
-            }
-
-        });
+        progressBarGoogle = (ProgressBar) findViewById(R.id.progressBarGoogle);
     }
 
-    public void MensajeOK(String msg){
-        View v1 = getWindow().getDecorView().getRootView();
-        AlertDialog.Builder builder1 = new AlertDialog.Builder( v1.getContext());
-        builder1.setMessage(msg);
-        builder1.setCancelable(true);
-        builder1.setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {} });
-        AlertDialog alert11 = builder1.create();
-        alert11.show();
-        ;};
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
 
-    public void IniciarSesion(String nombre, String password){
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(nombre, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    final EditText nombre = (EditText) findViewById(R.id.editText);
-                    Intent intento = new Intent(getApplicationContext(), MainActivity.class);
-                    intento.putExtra("usuario", nombre.getText().toString());
-                    startActivity(intento);
-                }else{
-                    MensajeOK("Usuario o contraseña incorrecta");
-                }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SIGN_IN_CODE) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
+                GoogleSignInAccount account = result.getSignInAccount();
+                firebaseAuthWithGoogle(account);
+            } else {
             }
-        });
+        }
+    }
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Intent intento = new Intent(getApplicationContext(), MainActivity.class);
+                            intento.putExtra("usuario", user.getEmail().toString());
+                            startActivity(intento);
+                        } else {
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(mAuthListener != null)
+            mAuth.removeAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

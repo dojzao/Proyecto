@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -37,6 +38,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -61,7 +63,11 @@ public class MainActivity extends AppCompatActivity
     DatabaseReference bdref;
 
     private SearchView searchView;
+    private AutoCompleteTextView SearchText;
+
     private StorageReference storage;
+    FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseAuth mAuth;
 
     private String nombreUsuario;
     private double Total;
@@ -150,6 +156,28 @@ public class MainActivity extends AppCompatActivity
         Mi_actual.setText("0.0");
         LlenarListView();
         RegistrarClicks();
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            }
+        };
+        SearchText = (AutoCompleteTextView) findViewById(R.id.editTextBuscar);
+        SearchText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ObtenerProducto(SearchText.getText().toString());
+                SearchText.setText("");
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
     public void MensajePrincipal(String msg){getSupportActionBar().setTitle(msg);};
@@ -157,6 +185,10 @@ public class MainActivity extends AppCompatActivity
     public void CrearYAbrirBaseDeDatos() {
         db = new ProductoBD(this);
         db.open();
+    }
+
+    private ArrayAdapter<String> getProductosAdapter() {
+        return new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, Llaves);
     }
 
     private void ObtenerProductos() {
@@ -173,6 +205,7 @@ public class MainActivity extends AppCompatActivity
                         Llaves.add(postSnapshot.getKey() + "_" + postSnapshot.child("precio").getValue());
                     }
                 }
+                SearchText.setAdapter(getProductosAdapter());
             }
 
             @Override
@@ -286,7 +319,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
                 String[] columns = { BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_INTENT_DATA,};
                 filter(newText, sprCoun.getSelectedItem().toString());
                 MatrixCursor cursor = new MatrixCursor(columns);
@@ -362,6 +394,8 @@ public class MainActivity extends AppCompatActivity
             Intent intento = new Intent(getApplicationContext(), AcercaDe.class);
             startActivity(intento);
         } else if (id == R.id.salir) {
+            mAuth.signOut();
+            FirebaseAuth.getInstance().signOut();
             Intent intento = new Intent(getApplicationContext(), InicioSesion.class);
             startActivity(intento);
         }
@@ -577,5 +611,12 @@ public class MainActivity extends AppCompatActivity
 
             return itemView;
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(mAuthListener != null)
+            mAuth.removeAuthStateListener(mAuthListener);
     }
 }
