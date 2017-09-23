@@ -24,12 +24,11 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class InicioSesion extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
-    FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseAuth mAuth;
-
-    private GoogleApiClient mGoogleApiClient;
     private Button GoogleButton;
-    private static final int SIGN_IN_CODE = 777;
+    private static final int RC_SIGN_IN = 9001;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    public static GoogleApiClient mGoogleApiClient;
 
     private ProgressBar progressBarGoogle;
 
@@ -46,7 +45,7 @@ public class InicioSesion extends AppCompatActivity implements GoogleApiClient.O
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
+                .enableAutoManage(InicioSesion.this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
@@ -63,9 +62,9 @@ public class InicioSesion extends AppCompatActivity implements GoogleApiClient.O
             @Override
             public void onClick(View arg0) {
                 progressBarGoogle.setVisibility(View.VISIBLE);
-                GoogleButton.setVisibility(View.GONE);
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                startActivityForResult(signInIntent, SIGN_IN_CODE);
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+                GoogleButton.setVisibility(View.GONE);
             }
         });
 
@@ -81,12 +80,11 @@ public class InicioSesion extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SIGN_IN_CODE) {
+        if (requestCode==RC_SIGN_IN){
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
+            if (result.isSuccess()){
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
-            } else {
             }
         }
     }
@@ -109,14 +107,6 @@ public class InicioSesion extends AppCompatActivity implements GoogleApiClient.O
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        if(mAuthListener != null)
-            mAuth.removeAuthStateListener(mAuthListener);
-    }
-
-    @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
     }
 }

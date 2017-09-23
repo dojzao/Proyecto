@@ -2,6 +2,8 @@ package com.example.degoj.proyecto;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -16,13 +18,18 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
+
+import static com.example.degoj.proyecto.InicioSesion.mGoogleApiClient;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
-    FirebaseDatabase firebase = FirebaseDatabase.getInstance();
     FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseAuth mAuth;
 
@@ -47,7 +54,13 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         View header = navigationView.getHeaderView(0);
 
-        firebase.setPersistenceEnabled(true);
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            }
+        };
 
         MensajePrincipal("Menu Principal");
 
@@ -119,6 +132,33 @@ public class MainActivity extends AppCompatActivity
                 vg.setMiproducto(-1);
                 fragment = new AgregarProducto();
                 break;
+            case R.id.salir:
+                mGoogleApiClient.connect();
+                mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(@Nullable Bundle bundle) {
+
+                        FirebaseAuth.getInstance().signOut();
+                        if (mGoogleApiClient.isConnected()) {
+                            Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+                                @Override
+                                public void onResult(@NonNull Status status) {
+                                    if (status.isSuccess()) {
+                                        Intent intent = new Intent(getApplicationContext(), InicioSesion.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+
+                    }
+                });
+                break;
         }
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -143,10 +183,23 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
     public void MensajePrincipal(String msg){getSupportActionBar().setTitle(msg);};
 
     public void CrearYAbrirBaseDeDatos() {
         db = new ProductoBD(this);
         db.open();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }
