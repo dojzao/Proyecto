@@ -31,17 +31,17 @@
         android:textAlignment="center" />
 
     <EditText
+        android:id="@+id/textPrecio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/textPrecio"
-        android:layout_below="@+id/textMarca"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="14dp"
         android:layout_alignLeft="@+id/textCant"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignStart="@+id/textCant"
+        android:layout_below="@+id/textMarca"
+        android:layout_marginTop="14dp"
+        android:ems="10"
+        android:inputType="number"
         android:textAlignment="center" />
 
     <EditText

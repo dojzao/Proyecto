@@ -7,6 +7,7 @@ public class VariablesGlobales {
     private int pos = -1;
 
     private List<Producto> myProducts = new ArrayList<>();
+    private List<String> mySupermercados = new ArrayList<>();
 
     private static VariablesGlobales instance = null;
 
@@ -27,4 +28,8 @@ public class VariablesGlobales {
     public List<Producto> getMyProducts() { return myProducts;}
 
     public void setMyProducts(List<Producto> myProducts) {this.myProducts = myProducts;}
+
+    public List<String> getmySupermercados() { return mySupermercados;}
+
+    public void setmySupermercados(List<String> mySupermercados) {this.mySupermercados = mySupermercados;}
 }

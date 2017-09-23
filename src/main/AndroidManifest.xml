@@ -32,11 +32,6 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".AcercaDe" />
-        <activity
-            android:name=".AgregarProducto"
-            android:label="@string/title_activity_agregar_producto"
-            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
