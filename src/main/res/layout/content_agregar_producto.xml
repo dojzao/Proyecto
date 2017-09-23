@@ -15,80 +15,76 @@
 
 
     <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
         android:id="@+id/textNombre"
-        android:singleLine="false"
-        android:selectAllOnFocus="false"
-        android:layout_marginTop="39dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Nombre del Producto..."
+        android:inputType="textPersonName"
+        android:textAlignment="center"
         android:layout_below="@+id/imagenProducto"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignLeft="@+id/textMarca"
-        android:layout_alignStart="@+id/textMarca"
-        android:textAlignment="center" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="15dp"/>
 
     <EditText
         android:id="@+id/textPrecio"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textCant"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignStart="@+id/textCant"
-        android:layout_below="@+id/textMarca"
-        android:layout_marginTop="14dp"
         android:ems="10"
+        android:hint="Precio del Producto..."
         android:inputType="number"
-        android:textAlignment="center" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/textMarca"
-        android:layout_marginTop="17dp"
-        android:layout_below="@+id/textNombre"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignLeft="@+id/textPrecio"
-        android:layout_alignStart="@+id/textPrecio"
-        android:textAlignment="center" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/textCant"
-        android:layout_alignTop="@+id/textView8"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignLeft="@+id/spinnerLugares"
-        android:layout_alignStart="@+id/spinnerLugares"
-        android:text="1"
-        android:textAlignment="center" />
-
-    <ImageView
-        android:layout_width="100dp"
-        app:srcCompat="@drawable/imgvacia"
-        android:id="@+id/imagenProducto"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_height="130dp" />
-
-    <TextView
-        android:text="Supermercado:"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView9"
-        android:layout_below="@+id/textCant"
+        android:textAlignment="center"
+        android:layout_below="@+id/textMarca"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="13dp" />
+        android:layout_marginTop="15dp"/>
+
+    <EditText
+        android:id="@+id/textMarca"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Marca del Producto..."
+        android:inputType="textPersonName"
+        android:textAlignment="center"
+        android:layout_below="@+id/textNombre"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="15dp"/>
+
+    <EditText
+        android:id="@+id/textDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Añadir Descripción (Opcional)"
+        android:inputType="textMultiLine"
+        android:textAlignment="center"
+        android:layout_below="@+id/textPrecio"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="15dp"/>
+
+    <ImageView
+        android:id="@+id/imagenProducto"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:srcCompat="@drawable/imgvacia"
+        android:layout_below="@+id/text"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Supermercado:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/textDesc"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="15dp"/>
 
     <Spinner
         android:layout_width="match_parent"
@@ -101,42 +97,16 @@
         android:layout_toEndOf="@+id/textView9" />
 
     <TextView
-        android:text="Cantidad: "
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="19dp"
-        android:id="@+id/textView8"
-        android:layout_below="@+id/textPrecio"
-        android:layout_toLeftOf="@+id/textCant"
-        android:layout_toStartOf="@+id/textCant" />
-
-    <TextView
-        android:text="Precio:"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView7"
-        android:layout_alignTop="@+id/textPrecio"
-        android:layout_toLeftOf="@+id/textPrecio"
-        android:layout_toStartOf="@+id/textPrecio" />
-
-    <TextView
-        android:text="Marca:"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView6"
-        android:layout_alignTop="@+id/textMarca"
-        android:layout_alignLeft="@+id/textView7"
-        android:layout_alignStart="@+id/textView7" />
-
-    <TextView
-        android:text="Nombre: "
-        android:layout_width="wrap_content"
         android:id="@+id/text"
-        android:layout_alignTop="@+id/textNombre"
-        android:layout_toLeftOf="@+id/textNombre"
-        android:layout_toStartOf="@+id/textNombre"
-        android:layout_height="140dp"
-        android:layout_above="@+id/textMarca" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Agregue una foto del producto"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
 
 </RelativeLayout>

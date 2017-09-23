@@ -57,6 +57,13 @@ public class InicioSesion extends AppCompatActivity implements GoogleApiClient.O
             }
         };
 
+        if(mAuth.getCurrentUser() != null){
+            FirebaseUser user = mAuth.getCurrentUser();
+            Intent intento = new Intent(getApplicationContext(), MainActivity.class);
+            intento.putExtra("usuario", user.getEmail().toString());
+            startActivity(intento);
+        }
+
         GoogleButton = (Button) findViewById(R.id.signInGoogle);
         GoogleButton.setOnClickListener(new View.OnClickListener(){
             @Override

@@ -8,6 +8,7 @@ public class VariablesGlobales {
 
     private List<Producto> myProducts = new ArrayList<>();
     private List<String> mySupermercados = new ArrayList<>();
+    private boolean todosExisten;
 
     private static VariablesGlobales instance = null;
 
@@ -32,4 +33,12 @@ public class VariablesGlobales {
     public List<String> getmySupermercados() { return mySupermercados;}
 
     public void setmySupermercados(List<String> mySupermercados) {this.mySupermercados = mySupermercados;}
+
+    public boolean isTodosExisten() {
+        return todosExisten;
+    }
+
+    public void setTodosExisten(boolean todosExisten) {
+        this.todosExisten = todosExisten;
+    }
 }

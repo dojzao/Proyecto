@@ -6,12 +6,12 @@ import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public class Producto implements Serializable{
-    public Producto(String imagenBD, String nombre, String marca, double precio, int cant, String supermercado) {
+    public Producto(String imagenBD, String nombre, String marca, double precio, String desc, String supermercado) {
         this.ImagenBD = imagenBD;
         this.Nombre = nombre;
         this. Marca = marca;
         this.Precio = precio;
-        this.cant = cant;
+        this.desc = desc;
         this.Supermercado = supermercado;
         this.Imagen = null;
     }
@@ -64,9 +64,9 @@ public class Producto implements Serializable{
 
     public void setSupermercado(String supermercado) { Supermercado = supermercado; }
 
-    public int getCant() { return cant; }
+    public String getDesc() { return desc; }
 
-    public void setCant(int cant) { this.cant = cant; }
+    public void setString(String desc) { this.desc = desc; }
 
     public boolean isComprado() {
         return comprado;
@@ -87,7 +87,7 @@ public class Producto implements Serializable{
     private String Nombre;
     private String Marca;
     private double Precio;
-    private int cant;
+    private String desc;
     private String Supermercado;
     private String ImagenBD;
     private boolean comprado;

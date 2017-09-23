@@ -106,13 +106,13 @@ public class AgregarProducto extends Fragment {
         TextView campotextNombre = (TextView) getActivity().findViewById(textNombre);
         TextView campotextMarca = (TextView) getActivity().findViewById(textMarca);
         TextView campotextPrecio = (TextView) getActivity().findViewById(textPrecio);
-        TextView textCantidad = (TextView) getActivity().findViewById(R.id.textCant);
+        TextView campotextDesc = (TextView) getActivity().findViewById(R.id.textDesc);
         ImageView imagenProd = (ImageView) getActivity().findViewById(R.id.imagenProducto);
 
         campotextMarca.setBackgroundResource(R.drawable.lost_border);
         campotextNombre.setBackgroundResource(R.drawable.lost_border);
         campotextPrecio.setBackgroundResource(R.drawable.lost_border);
-        textCantidad.setBackgroundResource(R.drawable.lost_border);
+        campotextDesc.setBackgroundResource(R.drawable.lost_border);
 
         superauxiliar = new ArrayList<>();
         superauxiliar.addAll(vg.getmySupermercados());
@@ -123,19 +123,19 @@ public class AgregarProducto extends Fragment {
             campotextNombre.setText(vg.getMyProducts().get(vg.getPos()).getNombre());
             campotextMarca.setText(vg.getMyProducts().get(vg.getPos()).getMarca());
             campotextPrecio.setText(String.valueOf(vg.getMyProducts().get(vg.getPos()).getPrecio()));
-            textCantidad.setText(String.valueOf(vg.getMyProducts().get(vg.getPos()).getCant()));
+            campotextDesc.setText(String.valueOf(vg.getMyProducts().get(vg.getPos()).getDesc()));
             superauxiliar.clear();
             superauxiliar.add(vg.getMyProducts().get(vg.getPos()).getSupermercado());
 
             campotextNombre.setEnabled(false);
             campotextMarca.setEnabled(false);
-            textCantidad.setEnabled(false);
+            campotextDesc.setEnabled(false);
         }else{
             MODO_EDITAR = false;
             superauxiliar.remove(0);
             campotextNombre.setEnabled(true);
             campotextMarca.setEnabled(true);
-            textCantidad.setEnabled(true);
+            campotextDesc.setEnabled(true);
         }
 
         CargarSpinner();
@@ -147,20 +147,20 @@ public class AgregarProducto extends Fragment {
                 final TextView campotextNombre = (TextView) getActivity().findViewById(textNombre);
                 final TextView campotextMarca = (TextView) getActivity().findViewById(textMarca);
                 final TextView campotextPrecio = (TextView) getActivity().findViewById(textPrecio);
-                final TextView textCantidad = (TextView) getActivity().findViewById(R.id.textCant);
+                final TextView campotextDesc = (TextView) getActivity().findViewById(R.id.textDesc);
 
                 campotextMarca.setBackgroundResource(R.drawable.lost_border);
                 campotextNombre.setBackgroundResource(R.drawable.lost_border);
                 campotextPrecio.setBackgroundResource(R.drawable.lost_border);
-                textCantidad.setBackgroundResource(R.drawable.lost_border);
+                campotextDesc.setBackgroundResource(R.drawable.lost_border);
 
                 try {
                     String nombre = campotextNombre.getText().toString();
                     String marca = campotextMarca.getText().toString();
                     double precio = Double.parseDouble(campotextPrecio.getText().toString());
-                    int cant = Integer.parseInt(textCantidad.getText().toString());
+                    String desc = campotextDesc.getText().toString();
                     String SuperM = sprCoun.getSelectedItem().toString();
-                    String ImagenBD = nombre + "_" + marca;
+                    String ImagenBD = nombre + " " + marca;
 
                     if(!yaimagen && !MODO_EDITAR){
                         Toast.makeText(getActivity().getApplicationContext(),"No ha selecionado una imagen",Toast.LENGTH_LONG).show();
@@ -173,7 +173,7 @@ public class AgregarProducto extends Fragment {
                     }else {
                         progress.setMessage("uploading");
                         progress.show();
-                        AgregarProductoBD(ImagenBD, nombre, marca, precio, cant, SuperM);
+                        AgregarProductoBD(ImagenBD, nombre, marca, precio, desc, SuperM);
                         if(!MODO_EDITAR) {
                             StorageReference pathRE = storage.child("photos").child("Imagen_" + ImagenBD);
                             pathRE.putFile(path).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -184,7 +184,7 @@ public class AgregarProducto extends Fragment {
                                     campotextMarca.setText("");
                                     campotextNombre.setText("");
                                     campotextPrecio.setText("");
-                                    textCantidad.setText("");
+                                    campotextDesc.setText("");
                                     ImageView Mi_imageview = (ImageView) getActivity().findViewById(R.id.imagenProducto);
                                     Mi_imageview.setImageResource(R.drawable.imgvacia);
                                     yaimagen = false;
@@ -196,12 +196,7 @@ public class AgregarProducto extends Fragment {
                         }
                     }
                 }catch (NumberFormatException ex){
-                    if(MODO_EDITAR){
-                        campotextPrecio.setBackgroundResource(R.drawable.focus_border_style);
-                    }else{
-                        campotextPrecio.setBackgroundResource(R.drawable.focus_border_style);
-                        textCantidad.setBackgroundResource(R.drawable.focus_border_style);
-                    }
+                    campotextPrecio.setBackgroundResource(R.drawable.focus_border_style);
                     Toast.makeText(getActivity().getApplicationContext(),"No se permiten letras ni espacios vacios en estos campos",Toast.LENGTH_LONG).show();
                 }
             }
@@ -240,19 +235,19 @@ public class AgregarProducto extends Fragment {
         sprCoun.setAdapter(adapter);
     }
 
-    private void AgregarProductoBD(String ImagenBD, String nombre, String Marca, double precio, int cant, String mercado) {
+    private void AgregarProductoBD(String ImagenBD, String nombre, String Marca, double precio, String desc, String mercado) {
         bdref = firebase.getReference(FirebaseReferences.PRODUCTOS_REFERENCES);
-        final Producto producto = new Producto("Imagen_" + ImagenBD, nombre, Marca, precio, cant, mercado);
+        final Producto producto = new Producto("Imagen_" + ImagenBD, nombre, Marca, precio, desc, mercado);
         if(MODO_EDITAR){
             for(int i = 0; i < vg.getMyProducts().size(); i++){
                 if(vg.getMyProducts().get(i).getImagenBD().equals(producto.getImagenBD())
                         && vg.getMyProducts().get(i).getSupermercado().equals(mercado)){
-                    vg.getMyProducts().set(i, new Producto("Imagen_" + ImagenBD, nombre, Marca, precio, cant, mercado));
+                    vg.getMyProducts().set(i, new Producto("Imagen_" + ImagenBD, nombre, Marca, precio, desc, mercado));
                 }
             }
-            bdref.child(ImagenBD + "_" + mercado).child("precio").setValue(producto.getPrecio());
+            bdref.child(ImagenBD + " " + mercado).child("precio").setValue(producto.getPrecio());
         }else {
-            bdref.child(ImagenBD + "_" + mercado).setValue(producto);
+            bdref.child(ImagenBD + " " + mercado).setValue(producto);
         }
     }
 
@@ -345,7 +340,6 @@ public class AgregarProducto extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                //finish();
             }
         });
 

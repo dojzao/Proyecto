@@ -62,8 +62,6 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-        MensajePrincipal("Menu Principal");
-
         Intent callingIntent = getIntent();
         nombreUsuario = callingIntent.getStringExtra("usuario");
 
@@ -105,23 +103,15 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     private void displaySelectedScreen(int itemId) {
         Fragment fragment = null;
         switch (itemId) {
             case R.id.principal:
+                MensajePrincipal("Menu Principal");
                 fragment = new ListaProductos();
                 break;
             case R.id.acercade:
+                MensajePrincipal("Acerca De");
                 fragment = new AcercaDe();
                 break;
             case R.id.favoritos:
@@ -129,6 +119,7 @@ public class MainActivity extends AppCompatActivity
                 ((ListaProductos) fragment).LlenarListFavoritos();
                 break;
             case R.id.nuevoP:
+                MensajePrincipal("Agregar Nuevo Producto");
                 vg.setMiproducto(-1);
                 fragment = new AgregarProducto();
                 break;

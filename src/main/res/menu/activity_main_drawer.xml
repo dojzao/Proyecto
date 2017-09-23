@@ -20,12 +20,12 @@
         <menu>
             <item
                 android:id="@+id/acercade"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@android:drawable/ic_menu_info_details"
                 android:title="Acerca De" />
             <item
                 android:id="@+id/salir"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Salir" />
+                android:icon="@android:drawable/ic_menu_close_clear_cancel"
+                android:title="Cerrar Sesión" />
         </menu>
     </item>
 

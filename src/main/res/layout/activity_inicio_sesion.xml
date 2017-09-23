@@ -20,21 +20,22 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/signInGoogle"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
         android:text="SnapShop"
         android:textAlignment="center"
         android:textColor="@color/blanco"
-        android:layout_marginTop="100dp"
         android:textSize="30sp"
         android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="134dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="42dp"
-        app:srcCompat="@drawable/icono" />
+        app:srcCompat="@drawable/icono"
+        android:layout_weight="0.03" />
 
     <TextView
         android:id="@+id/textView12"

@@ -40,10 +40,6 @@ import java.util.List;
 
 import static com.example.degoj.proyecto.R.id.precio;
 
-/**
- * Created by degoj on 9/22/2017.
- */
-
 public class ListaProductos extends Fragment {
 
     FirebaseDatabase firebase = FirebaseDatabase.getInstance();
@@ -131,12 +127,7 @@ public class ListaProductos extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Llaves.clear();
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                    Long cantidad = (Long) postSnapshot.child("cant").getValue();
-                    if(cantidad > 1){
-                        Llaves.add(cantidad + "-" + postSnapshot.getKey() + "_" + postSnapshot.child("precio").getValue());
-                    }else{
-                        Llaves.add(postSnapshot.getKey() + "_" + postSnapshot.child("precio").getValue());
-                    }
+                    Llaves.add(postSnapshot.getKey() + "-" + postSnapshot.child("precio").getValue());
                 }
                 SearchText.setAdapter(getProductosAdapter());
             }
@@ -150,12 +141,8 @@ public class ListaProductos extends Fragment {
 
     private void ObtenerProducto(String Llave) {
         bdref = firebase.getReference(FirebaseReferences.PRODUCTOS_REFERENCES);
-        String LlaveArray[] = Llave.split("_");
-        Llave = LlaveArray[0] + "_" + LlaveArray[1] + "_" + LlaveArray[2];
-        LlaveArray = Llave.split("-");
-        if(LlaveArray.length > 1){
-            Llave = LlaveArray[1];
-        }
+        String LlaveArray[] = Llave.split("-");
+        Llave = LlaveArray[0];
 
         bdref.child(Llave).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -215,12 +202,13 @@ public class ListaProductos extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
+                vg.setTodosExisten(true);
                 for(int i = 0; i < vg.getMyProducts().size(); i++){
                     final int pos = i;
                     if(!vg.getMyProducts().get(i).getSupermercado().equals(sprCoun.getSelectedItem().toString())){
                         Total -=  vg.getMyProducts().get(i).getPrecio();
                         bdref = firebase.getReference(FirebaseReferences.PRODUCTOS_REFERENCES);
-                        bdref.child(vg.getMyProducts().get(i).getNombre() + "_" + vg.getMyProducts().get(i).getMarca() + "_"
+                        bdref.child(vg.getMyProducts().get(i).getNombre() + " " + vg.getMyProducts().get(i).getMarca() + " "
                                 + sprCoun.getSelectedItem().toString()).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -230,11 +218,15 @@ public class ListaProductos extends Fragment {
                                     vg.getMyProducts().set(pos, producto);
                                     Total += producto.getPrecio();
                                     Mi_total.setText(String.valueOf(Total));
-                                    LlenarListView();
+                                    update();
                                 }catch (NullPointerException ex){
                                     Total +=  vg.getMyProducts().get(pos).getPrecio();
                                     Mi_total.setText(String.valueOf(Total));
-                                    LlenarListView();
+                                    update();
+                                    if (vg.isTodosExisten()) {
+                                        MensajeOK("Algunos productos no se encuentran en el supermercado, dichos productos estan marcados en Rojo");
+                                        vg.setTodosExisten(false);
+                                    }
                                 }
                             }
 
@@ -244,6 +236,7 @@ public class ListaProductos extends Fragment {
                             }
                         });
                     }
+                    update();
                 }
             }
             @Override
@@ -304,7 +297,7 @@ public class ListaProductos extends Fragment {
                     }
                     Mi_total.setText(String.valueOf(Total));
                     vg.getMyProducts().remove(position);
-                    LlenarListView();
+                    update();
                 }else {
                     dialog.dismiss();
                 }
@@ -355,22 +348,22 @@ public class ListaProductos extends Fragment {
                 itemView = LayoutInflater.from(getActivity()).inflate(R.layout.item_view, parent, false);
             }
 
-            final Producto currentCar = vg.getMyProducts().get(position);
+            final Producto current = vg.getMyProducts().get(position);
 
-            if (!sprCoun.getSelectedItem().toString().equals("Todos") && !sprCoun.getSelectedItem().toString().equals(currentCar.getSupermercado())) {
+            if (!sprCoun.getSelectedItem().toString().equals("Todos") && !sprCoun.getSelectedItem().toString().equals(current.getSupermercado())) {
                 itemView.setBackgroundColor(Color.RED);
             }else{
                 itemView.setBackgroundColor(Color.parseColor("#FFFF66"));
             }
 
             final ImageView MIimageView = (ImageView) itemView.findViewById(R.id.img);
-            if(currentCar.getImagen() == null) {
-                storage.child("photos/" + currentCar.getImagenBD()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            if(current.getImagen() == null) {
+                storage.child("photos/" + current.getImagenBD()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
                         MIimageView.setImageURI(uri);
                         Picasso.with(MIimageView.getContext()).load(uri.toString()).into(MIimageView);
-                        currentCar.setImagen(MIimageView.getDrawable());
+                        current.setImagen(MIimageView.getDrawable());
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -379,24 +372,21 @@ public class ListaProductos extends Fragment {
                     }
                 });
             }else{
-                MIimageView.setImageDrawable(currentCar.getImagen());
+                MIimageView.setImageDrawable(current.getImagen());
             }
 
             TextView makeText = (TextView) itemView.findViewById(R.id.nombre);
-            makeText.setText("  " + currentCar.getNombre() + ", " + currentCar.getMarca());
+            makeText.setText("  " + current.getNombre() + ", " + current.getMarca());
 
             TextView makeText2 = (TextView) itemView.findViewById(R.id.textsuper);
-            makeText2.setText("   " + currentCar.getSupermercado());
+            makeText2.setText("   " + current.getSupermercado());
 
             TextView condionText = (TextView) itemView.findViewById(precio);
-            if(currentCar.getCant() > 1){
-                condionText.setText("  Precio: " + String.valueOf(currentCar.getPrecio()) + "  Cantidad: " + currentCar.getCant());
-            }else{
-                condionText.setText("  Precio: " + String.valueOf(currentCar.getPrecio()));
-            }
+            condionText.setText("  Precio: " + String.valueOf(current.getPrecio()));
 
             ImageView MimageBox = (ImageView) itemView.findViewById(R.id.imageBox);
-            if(currentCar.isComprado()){
+
+            if(current.isComprado()){
                 MimageBox.setImageResource(android.R.drawable.checkbox_on_background);
             }else{
                 MimageBox.setImageResource(android.R.drawable.checkbox_off_background);

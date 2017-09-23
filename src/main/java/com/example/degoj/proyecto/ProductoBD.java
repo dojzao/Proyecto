@@ -37,7 +37,7 @@ public class ProductoBD {
                     + KEY_Nombre + " text, "
                     + KEY_Marca + " text, "
                     + KEY_Precio + " text, "
-                    + KEY_Cantidad + " integer, "
+                    + KEY_Cantidad + " text, "
                     + KEY_Mercado + " text, "
                     + KEY_favorito + " text);";
 
@@ -48,7 +48,7 @@ public class ProductoBD {
                     + KEY_Nombre + " text, "
                     + KEY_Marca + " text, "
                     + KEY_Precio + " text, "
-                    + KEY_Cantidad + " integer, "
+                    + KEY_Cantidad + " text, "
                     + KEY_Mercado + " text, "
                     + KEY_favorito + " text);";
 
@@ -100,7 +100,7 @@ public class ProductoBD {
         mensaje ="La BD se ha cerrado";
     }
 
-    public long insertDato(String imageBD, String nombre, String marca, double precio, int cantidad, String mercado, String favorito) {
+    public long insertDato(String imageBD, String nombre, String marca, double precio, String desc, String mercado, String favorito) {
         long valor =-1;
         if(db != null) {
             ContentValues initialValues = new ContentValues();
@@ -108,7 +108,7 @@ public class ProductoBD {
             initialValues.put(KEY_Nombre, nombre);
             initialValues.put(KEY_Marca,  marca);
             initialValues.put(KEY_Precio, String.valueOf(precio));
-            initialValues.put(KEY_Cantidad, cantidad);
+            initialValues.put(KEY_Cantidad, desc);
             initialValues.put(KEY_Mercado, mercado);
             initialValues.put(KEY_favorito, favorito);
             valor = db.insert(DATABASE_TABLE, null, initialValues);
@@ -117,11 +117,11 @@ public class ProductoBD {
         return valor;
     }
 
-    void insertDatoSQL(String imageBD, String nombre, String marca, double precio, int cantidad, String mercado, String favorito) {
+    void insertDatoSQL(String imageBD, String nombre, String marca, double precio, String desc, String mercado, String favorito) {
         String orden = "INSERT INTO " + DATABASE_TABLE + " (" + KEY_ROWID + "," + KEY_Nombre + ","
                 + KEY_Marca + "," + KEY_Precio + "," + KEY_Cantidad + "," + KEY_Mercado + "," + KEY_favorito
                 +") VALUES ('" +  imageBD + "','" + nombre + "','" + marca + "','"
-                + String.valueOf(precio) + "'," + cantidad + ",'" + mercado + "','" + favorito + "')";
+                + String.valueOf(precio) + "'," + desc + ",'" + mercado + "','" + favorito + "')";
         try {
             db.execSQL(orden);
             mensaje ="Inserción OK";
@@ -172,10 +172,10 @@ public class ProductoBD {
                 String nombre = c.getString(2);
                 String marca = c.getString(3);
                 double precio = Double.parseDouble(c.getString(4));
-                int cantidad = c.getInt(5);
+                String desc = c.getString(5);
                 String mercado = c.getString(6);
                 String favorito = c.getString(7);
-                respuesta.add(new Producto(image, nombre, marca, precio, cantidad, mercado));
+                respuesta.add(new Producto(image, nombre, marca, precio, desc, mercado));
             } while(c.moveToNext());
         }
         return respuesta;
