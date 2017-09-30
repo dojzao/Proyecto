@@ -8,10 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,13 +19,15 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,7 +56,7 @@ public class AgregarProducto extends Fragment {
     private final int PHOTO_CODE = 111;
     private final int SELECT_PICTURE = 300;
 
-    RelativeLayout l;
+    LinearLayout l;
     ImageView MiImageView;
 
     StorageReference storage;
@@ -70,7 +68,6 @@ public class AgregarProducto extends Fragment {
     DatabaseReference bdref;
 
     Spinner sprCoun;
-    private ShapeDrawable shape;
     private boolean yaimagen;
 
     private List<String> superauxiliar;
@@ -92,11 +89,6 @@ public class AgregarProducto extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle("Agregar Producto");
 
-        shape = new ShapeDrawable(new RectShape());
-        shape.getPaint().setColor(Color.RED);
-        shape.getPaint().setStyle(Paint.Style.STROKE);
-        shape.getPaint().setStrokeWidth(3);
-
         yaimagen = false;
         vg = VariablesGlobales.getInstance();
 
@@ -108,11 +100,6 @@ public class AgregarProducto extends Fragment {
         TextView campotextPrecio = (TextView) getActivity().findViewById(textPrecio);
         TextView campotextDesc = (TextView) getActivity().findViewById(R.id.textDesc);
         ImageView imagenProd = (ImageView) getActivity().findViewById(R.id.imagenProducto);
-
-        campotextMarca.setBackgroundResource(R.drawable.lost_border);
-        campotextNombre.setBackgroundResource(R.drawable.lost_border);
-        campotextPrecio.setBackgroundResource(R.drawable.lost_border);
-        campotextDesc.setBackgroundResource(R.drawable.lost_border);
 
         superauxiliar = new ArrayList<>();
         superauxiliar.addAll(vg.getmySupermercados());
@@ -149,30 +136,25 @@ public class AgregarProducto extends Fragment {
                 final TextView campotextPrecio = (TextView) getActivity().findViewById(textPrecio);
                 final TextView campotextDesc = (TextView) getActivity().findViewById(R.id.textDesc);
 
-                campotextMarca.setBackgroundResource(R.drawable.lost_border);
-                campotextNombre.setBackgroundResource(R.drawable.lost_border);
-                campotextPrecio.setBackgroundResource(R.drawable.lost_border);
-                campotextDesc.setBackgroundResource(R.drawable.lost_border);
-
                 try {
                     String nombre = campotextNombre.getText().toString();
                     String marca = campotextMarca.getText().toString();
-                    double precio = Double.parseDouble(campotextPrecio.getText().toString());
                     String desc = campotextDesc.getText().toString();
                     String SuperM = sprCoun.getSelectedItem().toString();
                     String ImagenBD = nombre + " " + marca;
 
                     if(!yaimagen && !MODO_EDITAR){
                         Toast.makeText(getActivity().getApplicationContext(),"No ha selecionado una imagen",Toast.LENGTH_LONG).show();
-                    }else if(marca.equals("")){
-                        campotextMarca.setBackgroundResource(R.drawable.focus_border_style);
-                        Toast.makeText(getActivity().getApplicationContext(),"La marca no puede ser vacia",Toast.LENGTH_LONG).show();
                     }else if(nombre.equals("")){
-                        campotextNombre.setBackgroundResource(R.drawable.focus_border_style);
-                        Toast.makeText(getActivity().getApplicationContext(),"El nombre no puede ser vacio",Toast.LENGTH_LONG).show();
+                        campotextNombre.setError("Se necesita un nombre del producto");
+                    }else if(marca.equals("")){
+                        campotextMarca.setError("Se necesita la marca del producto");
+                    }else if(campotextPrecio.getText().toString().equals("")){
+                        campotextPrecio.setError("Se necesita el precio del producto");
                     }else {
                         progress.setMessage("uploading");
                         progress.show();
+                        double precio = Double.parseDouble(campotextPrecio.getText().toString());
                         AgregarProductoBD(ImagenBD, nombre, marca, precio, desc, SuperM);
                         if(!MODO_EDITAR) {
                             StorageReference pathRE = storage.child("photos").child("Imagen_" + ImagenBD);
@@ -188,23 +170,29 @@ public class AgregarProducto extends Fragment {
                                     ImageView Mi_imageview = (ImageView) getActivity().findViewById(R.id.imagenProducto);
                                     Mi_imageview.setImageResource(R.drawable.imgvacia);
                                     yaimagen = false;
+                                    progress.dismiss();
                                 }
                             });
                         }else{
                             progress.dismiss();
+                            Fragment fragment = new ListaProductos();
+                            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                            ft.replace(R.id.content_frame, fragment);
+                            ft.commit();
+                            DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+                            drawer.closeDrawer(GravityCompat.START);
                             Toast.makeText(getActivity().getApplicationContext(),"Producto Actualizado",Toast.LENGTH_LONG).show();
                         }
                     }
                 }catch (NumberFormatException ex){
-                    campotextPrecio.setBackgroundResource(R.drawable.focus_border_style);
-                    Toast.makeText(getActivity().getApplicationContext(),"No se permiten letras ni espacios vacios en estos campos",Toast.LENGTH_LONG).show();
+                    campotextPrecio.setError("No se permiten letras en el precio");
                 }
             }
         });
 
         mayRequestStoragePermission();
 
-        l = (RelativeLayout) view.findViewById(R.id.content_agregar_producto);
+        l = (LinearLayout) view.findViewById(R.id.content_agregar_producto);
 
         MiImageView = (ImageView) view.findViewById(R.id.imagenProducto);
         if(!MODO_EDITAR) {
@@ -222,16 +210,6 @@ public class AgregarProducto extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 view.getContext(), android.R.layout.simple_spinner_item, superauxiliar.toArray(new String[superauxiliar.size()]));
 
-        sprCoun.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
         sprCoun.setAdapter(adapter);
     }
 
@@ -242,9 +220,16 @@ public class AgregarProducto extends Fragment {
             for(int i = 0; i < vg.getMyProducts().size(); i++){
                 if(vg.getMyProducts().get(i).getImagenBD().equals(producto.getImagenBD())
                         && vg.getMyProducts().get(i).getSupermercado().equals(mercado)){
+                    vg.setTotal((vg.getTotal() - vg.getMyProducts().get(i).getPrecio()) + precio);
+                    boolean escomprado = vg.getMyProducts().get(i).isComprado();
+                    if(escomprado){
+                        vg.setPrecioactual((vg.getPrecioactual() - vg.getMyProducts().get(i).getPrecio()) + precio);
+                    }
                     vg.getMyProducts().set(i, new Producto("Imagen_" + ImagenBD, nombre, Marca, precio, desc, mercado));
+                    vg.getMyProducts().get(i).setComprado(escomprado);
                 }
             }
+
             bdref.child(ImagenBD + " " + mercado).child("precio").setValue(producto.getPrecio());
         }else {
             bdref.child(ImagenBD + " " + mercado).setValue(producto);

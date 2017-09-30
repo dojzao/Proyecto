@@ -29,6 +29,7 @@ public class InicioSesion extends AppCompatActivity implements GoogleApiClient.O
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     public static GoogleApiClient mGoogleApiClient;
+    VariablesGlobales vg;
 
     private ProgressBar progressBarGoogle;
 
@@ -92,6 +93,9 @@ public class InicioSesion extends AppCompatActivity implements GoogleApiClient.O
             if (result.isSuccess()){
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
+            } else {
+                progressBarGoogle.setVisibility(View.GONE);
+                GoogleButton.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -103,11 +107,12 @@ public class InicioSesion extends AppCompatActivity implements GoogleApiClient.O
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            vg = VariablesGlobales.getInstance();
+                            vg.setmensajeMostrado(false);
                             FirebaseUser user = mAuth.getCurrentUser();
                             Intent intento = new Intent(getApplicationContext(), MainActivity.class);
                             intento.putExtra("usuario", user.getEmail().toString());
                             startActivity(intento);
-                        } else {
                         }
                     }
                 });
@@ -115,5 +120,6 @@ public class InicioSesion extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

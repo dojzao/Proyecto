@@ -48,8 +48,6 @@ public class ListaProductos extends Fragment {
     private AutoCompleteTextView SearchText;
     private StorageReference storage;
 
-    private double Total;
-    private double precioactual;
     TextView Mi_total;
     TextView Mi_actual;
 
@@ -109,9 +107,9 @@ public class ListaProductos extends Fragment {
         ObtenerProductos();
 
         Mi_total = (TextView) view.findViewById(R.id.textViewPagar);
-        Mi_total.setText("0.0");
+        Mi_total.setText(String.valueOf(vg.getTotal()));
         Mi_actual = (TextView) view.findViewById(R.id.textViewActual);
-        Mi_actual.setText("0.0");
+        Mi_actual.setText(String.valueOf(vg.getPrecioactual()));
         LlenarListView();
         RegistrarClicks();
     }
@@ -148,9 +146,10 @@ public class ListaProductos extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Producto producto = dataSnapshot.getValue(Producto.class);
-                producto.setComprado(false);
                 vg.getMyProducts().add(producto);
-                Ordenar();
+                vg.setTotal(vg.getTotal() + vg.getMyProducts().get(vg.getMyProducts().size() - 1).getPrecio());
+                Mi_total.setText(String.valueOf(vg.getTotal()));
+                update();
             }
 
             @Override
@@ -162,16 +161,7 @@ public class ListaProductos extends Fragment {
         bdref.child(Llave).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Total = 0;
-                precioactual = 0;
-                for(Producto p : vg.getMyProducts()) {
-                    Total += p.getPrecio();
-                    if(p.isComprado()){
-                        precioactual += p.getPrecio();
-                    }
-                }
-                Mi_total.setText(String.valueOf(Total));
-                update();
+                Ordenar();
             }
 
             @Override
@@ -203,38 +193,54 @@ public class ListaProductos extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 vg.setTodosExisten(true);
+                vg.setTotal(0);
+                vg.setPrecioactual(0);
                 for(int i = 0; i < vg.getMyProducts().size(); i++){
                     final int pos = i;
+                    String nombreSuper;
                     if(!vg.getMyProducts().get(i).getSupermercado().equals(sprCoun.getSelectedItem().toString())){
-                        Total -=  vg.getMyProducts().get(i).getPrecio();
+                        if(sprCoun.getSelectedItem().toString() == "Todos"){
+                            nombreSuper = vg.getMyProducts().get(i).getSupermercado();
+                        }else{
+                            nombreSuper = sprCoun.getSelectedItem().toString();
+                        }
                         bdref = firebase.getReference(FirebaseReferences.PRODUCTOS_REFERENCES);
                         bdref.child(vg.getMyProducts().get(i).getNombre() + " " + vg.getMyProducts().get(i).getMarca() + " "
-                                + sprCoun.getSelectedItem().toString()).addValueEventListener(new ValueEventListener() {
+                                + nombreSuper).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 try {
                                     Producto producto = dataSnapshot.getValue(Producto.class);
-                                    producto.setComprado(false);
+                                    producto.setComprado(vg.getMyProducts().get(pos).isComprado());
                                     vg.getMyProducts().set(pos, producto);
-                                    Total += producto.getPrecio();
-                                    Mi_total.setText(String.valueOf(Total));
                                     update();
                                 }catch (NullPointerException ex){
-                                    Total +=  vg.getMyProducts().get(pos).getPrecio();
-                                    Mi_total.setText(String.valueOf(Total));
                                     update();
-                                    if (vg.isTodosExisten()) {
+                                    if (!vg.ismensajeMostrado() && vg.isTodosExisten()) {
                                         MensajeOK("Algunos productos no se encuentran en el supermercado, dichos productos estan marcados en Rojo");
                                         vg.setTodosExisten(false);
+                                        vg.setmensajeMostrado(true);
                                     }
                                 }
+                                vg.setTotal(vg.getTotal() +  vg.getMyProducts().get(pos).getPrecio());
+                                if(vg.getMyProducts().get(pos).isComprado()){
+                                    vg.setPrecioactual(vg.getPrecioactual() + vg.getMyProducts().get(pos).getPrecio());
+                                }
+                                Mi_total.setText(String.valueOf(vg.getTotal()));
+                                Mi_actual.setText(String.valueOf(vg.getPrecioactual()));
                             }
 
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
-
                             }
                         });
+                    }else{
+                        vg.setTotal(vg.getTotal() +  vg.getMyProducts().get(pos).getPrecio());
+                        if(vg.getMyProducts().get(pos).isComprado()){
+                            vg.setPrecioactual(vg.getPrecioactual() + vg.getMyProducts().get(pos).getPrecio());
+                        }
+                        Mi_total.setText(String.valueOf(vg.getTotal()));
+                        Mi_actual.setText(String.valueOf(vg.getPrecioactual()));
                     }
                     update();
                 }
@@ -255,11 +261,11 @@ public class ListaProductos extends Fragment {
                                     int position, long id) {
                 vg.getMyProducts().get(position).setComprado(!vg.getMyProducts().get(position).isComprado());
                 if(vg.getMyProducts().get(position).isComprado()){
-                    precioactual += vg.getMyProducts().get(position).getPrecio();
-                    Mi_actual.setText(String.valueOf(precioactual));
+                    vg.setPrecioactual(vg.getPrecioactual() + vg.getMyProducts().get(position).getPrecio());
+                    Mi_actual.setText(String.valueOf(vg.getPrecioactual()));
                 }else{
-                    precioactual -= vg.getMyProducts().get(position).getPrecio();
-                    Mi_actual.setText(String.valueOf(precioactual));
+                    vg.setPrecioactual(vg.getPrecioactual() - vg.getMyProducts().get(position).getPrecio());
+                    Mi_actual.setText(String.valueOf(vg.getPrecioactual()));
                 }
                 update();
             }
@@ -268,7 +274,7 @@ public class ListaProductos extends Fragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 showOptions(position);
-                return false;
+                return true;
             }
         });
     }
@@ -290,12 +296,12 @@ public class ListaProductos extends Fragment {
                     drawer.closeDrawer(GravityCompat.START);
 
                 }else if(option[which] == "Borrar"){
-                    Total -= vg.getMyProducts().get(position).getPrecio();
+                    vg.setTotal(vg.getTotal() - vg.getMyProducts().get(position).getPrecio());
                     if(vg.getMyProducts().get(position).isComprado()){
-                        precioactual -= vg.getMyProducts().get(position).getPrecio();
-                        Mi_actual.setText(String.valueOf(precioactual));
+                        vg.setPrecioactual(vg.getPrecioactual() - vg.getMyProducts().get(position).getPrecio());
+                        Mi_actual.setText(String.valueOf(vg.getPrecioactual()));
                     }
-                    Mi_total.setText(String.valueOf(Total));
+                    Mi_total.setText(String.valueOf(vg.getTotal()));
                     vg.getMyProducts().remove(position);
                     update();
                 }else {
@@ -307,7 +313,7 @@ public class ListaProductos extends Fragment {
     }
 
     public void LlenarListFavoritos(){
-        vg.getMyProducts().clear();
+        /*vg.getMyProducts().clear();
         vg.getMyProducts().addAll(db.Seleccione("Favorito01"));
         Total = 0;
         precioactual = 0;
@@ -316,7 +322,7 @@ public class ListaProductos extends Fragment {
         }
         Mi_total.setText(String.valueOf(Total));
         Mi_actual.setText("0");
-        LlenarListView();
+        LlenarListView();*/
     }
 
     private void LlenarListView() {

@@ -1,100 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_agregar_producto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/blanco"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:weightSum="1"
     tools:context="com.example.degoj.proyecto.AgregarProducto"
     tools:showIn="@layout/activity_agregar_producto">
-
-
-    <EditText
-        android:id="@+id/textNombre"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Nombre del Producto..."
-        android:inputType="textPersonName"
-        android:textAlignment="center"
-        android:layout_below="@+id/imagenProducto"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="15dp"/>
-
-    <EditText
-        android:id="@+id/textPrecio"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Precio del Producto..."
-        android:inputType="number"
-        android:textAlignment="center"
-        android:layout_below="@+id/textMarca"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="15dp"/>
-
-    <EditText
-        android:id="@+id/textMarca"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Marca del Producto..."
-        android:inputType="textPersonName"
-        android:textAlignment="center"
-        android:layout_below="@+id/textNombre"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="15dp"/>
-
-    <EditText
-        android:id="@+id/textDesc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Añadir Descripción (Opcional)"
-        android:inputType="textMultiLine"
-        android:textAlignment="center"
-        android:layout_below="@+id/textPrecio"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="15dp"/>
-
-    <ImageView
-        android:id="@+id/imagenProducto"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        app:srcCompat="@drawable/imgvacia"
-        android:layout_below="@+id/text"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:id="@+id/textView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Supermercado:"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_below="@+id/textDesc"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="15dp"/>
-
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinnerLugares"
-        android:layout_alignTop="@+id/textView9"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/textView9"
-        android:layout_toEndOf="@+id/textView9" />
 
     <TextView
         android:id="@+id/text"
@@ -108,5 +27,84 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
+    <ImageView
+        android:id="@+id/imagenProducto"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/text"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@drawable/imgvacia" />
 
-</RelativeLayout>
+    <EditText
+        android:id="@+id/textNombre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/imagenProducto"
+        android:layout_marginTop="15dp"
+        android:ems="10"
+        android:hint="Nombre del Producto..."
+        android:inputType="textPersonName"
+        android:textAlignment="center" />
+
+    <EditText
+        android:id="@+id/textMarca"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:ems="10"
+        android:hint="Marca del Producto..."
+        android:inputType="textPersonName"
+        android:textAlignment="center" />
+
+    <EditText
+        android:id="@+id/textPrecio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textMarca"
+        android:layout_marginTop="15dp"
+        android:ems="10"
+        android:hint="Precio del Producto..."
+        android:inputType="numberDecimal"
+        android:textAlignment="center" />
+
+    <EditText
+        android:id="@+id/textDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textPrecio"
+        android:layout_marginTop="15dp"
+        android:ems="10"
+        android:hint="Añadir Descripción (Opcional)"
+        android:inputType="textMultiLine"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textDesc"
+        android:layout_marginTop="15dp"
+        android:text="Supermercado:"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/spinnerLugares"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/textView9"
+        android:layout_toEndOf="@+id/textView9"
+        android:layout_toRightOf="@+id/textView9" />
+
+
+</LinearLayout>

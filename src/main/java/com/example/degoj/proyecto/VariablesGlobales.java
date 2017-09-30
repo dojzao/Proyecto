@@ -8,6 +8,9 @@ public class VariablesGlobales {
 
     private List<Producto> myProducts = new ArrayList<>();
     private List<String> mySupermercados = new ArrayList<>();
+    private double Total = 0;
+    private double precioactual = 0;
+    private boolean mensajeMostrado = true;
     private boolean todosExisten;
 
     private static VariablesGlobales instance = null;
@@ -34,11 +37,35 @@ public class VariablesGlobales {
 
     public void setmySupermercados(List<String> mySupermercados) {this.mySupermercados = mySupermercados;}
 
+    public boolean ismensajeMostrado() {
+        return mensajeMostrado;
+    }
+
+    public void setmensajeMostrado(boolean mensajeMostrado) {
+        this.mensajeMostrado = mensajeMostrado;
+    }
+
     public boolean isTodosExisten() {
         return todosExisten;
     }
 
     public void setTodosExisten(boolean todosExisten) {
         this.todosExisten = todosExisten;
+    }
+
+    public double getTotal() {
+        return Total;
+    }
+
+    public void setTotal(double total) {
+        Total = total;
+    }
+
+    public double getPrecioactual() {
+        return precioactual;
+    }
+
+    public void setPrecioactual(double precioactual) {
+        this.precioactual = precioactual;
     }
 }
