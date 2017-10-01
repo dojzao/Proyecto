@@ -27,7 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,7 +56,7 @@ public class AgregarProducto extends Fragment {
     private final int PHOTO_CODE = 111;
     private final int SELECT_PICTURE = 300;
 
-    LinearLayout l;
+    RelativeLayout l;
     ImageView MiImageView;
 
     StorageReference storage;
@@ -192,7 +192,7 @@ public class AgregarProducto extends Fragment {
 
         mayRequestStoragePermission();
 
-        l = (LinearLayout) view.findViewById(R.id.content_agregar_producto);
+        l = (RelativeLayout) view.findViewById(R.id.content_agregar_producto);
 
         MiImageView = (ImageView) view.findViewById(R.id.imagenProducto);
         if(!MODO_EDITAR) {

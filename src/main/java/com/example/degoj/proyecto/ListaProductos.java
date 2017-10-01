@@ -8,8 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -292,9 +290,6 @@ public class ListaProductos extends Fragment {
                     FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.content_frame, fragment);
                     ft.commit();
-                    DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
-                    drawer.closeDrawer(GravityCompat.START);
-
                 }else if(option[which] == "Borrar"){
                     vg.setTotal(vg.getTotal() - vg.getMyProducts().get(position).getPrecio());
                     if(vg.getMyProducts().get(position).isComprado()){
