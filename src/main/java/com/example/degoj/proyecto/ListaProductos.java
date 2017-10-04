@@ -52,7 +52,6 @@ public class ListaProductos extends Fragment {
     private List<String> Llaves = new ArrayList<>();
 
     ArrayAdapter<Producto> adapter;
-    ProductoBD db;
     private Spinner sprCoun;
     VariablesGlobales vg;
 
@@ -351,9 +350,13 @@ public class ListaProductos extends Fragment {
 
             final Producto current = vg.getMyProducts().get(position);
 
-            if (!sprCoun.getSelectedItem().toString().equals("Todos") && !sprCoun.getSelectedItem().toString().equals(current.getSupermercado())) {
-                itemView.setBackgroundColor(Color.RED);
-            }else{
+            try {
+                if (!sprCoun.getSelectedItem().toString().equals("Todos") && !sprCoun.getSelectedItem().toString().equals(current.getSupermercado())) {
+                    itemView.setBackgroundColor(Color.RED);
+                } else {
+                    itemView.setBackgroundColor(Color.parseColor("#FFFF66"));
+                }
+            }catch (NullPointerException ex){
                 itemView.setBackgroundColor(Color.parseColor("#FFFF66"));
             }
 

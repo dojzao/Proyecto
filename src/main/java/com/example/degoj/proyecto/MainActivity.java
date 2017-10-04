@@ -24,6 +24,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import static com.example.degoj.proyecto.InicioSesion.mGoogleApiClient;
 
@@ -32,6 +37,9 @@ public class MainActivity extends AppCompatActivity
 
     FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseAuth mAuth;
+
+    FirebaseDatabase firebase = FirebaseDatabase.getInstance();
+    DatabaseReference bdref;
 
     private String nombreUsuario;
     ProductoBD db;
@@ -53,6 +61,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View header = navigationView.getHeaderView(0);
+        hideAdministradores();
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -65,10 +74,30 @@ public class MainActivity extends AppCompatActivity
         Intent callingIntent = getIntent();
         nombreUsuario = callingIntent.getStringExtra("usuario");
 
+        bdref = firebase.getReference(FirebaseReferences.ADMINISTRADORES_REFERENCES);
+        bdref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    String nombre = postSnapshot.getValue(String.class);
+                    if(nombre.equals(nombreUsuario)){
+                        showAdministradores();
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
         TextView Mi_textUsuario = (TextView) header.findViewById(R.id.textUsuario);
         Mi_textUsuario.setText(nombreUsuario);
 
         CrearYAbrirBaseDeDatos();
+        vg = VariablesGlobales.getInstance();
+        vg.getMyProducts().addAll(db.Seleccione());
+        db.VaciarTabla();
 
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -82,12 +111,23 @@ public class MainActivity extends AppCompatActivity
             }
         });*/
 
-        vg = VariablesGlobales.getInstance();
         displaySelectedScreen(R.id.principal);
     }
 
     public void Mensaje(String msg){
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();};
+
+    private void hideAdministradores() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        Menu nav_Menu = navigationView.getMenu();
+        nav_Menu.findItem(R.id.Administracion).setVisible(false);
+    }
+
+    private void showAdministradores() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        Menu nav_Menu = navigationView.getMenu();
+        nav_Menu.findItem(R.id.Administracion).setVisible(true);
+    }
 
     @Override
     public void onBackPressed() {
@@ -110,20 +150,26 @@ public class MainActivity extends AppCompatActivity
                 MensajePrincipal("Menu Principal");
                 fragment = new ListaProductos();
                 break;
+
             case R.id.acercade:
                 MensajePrincipal("Acerca De");
                 fragment = new AcercaDe();
                 break;
+
             case R.id.favoritos:
-                fragment = new ListaProductos();
-                ((ListaProductos) fragment).LlenarListFavoritos();
                 break;
+
+            case R.id.nuevoA:
+                fragment = new Vista_Administrador();
+                break;
+
             case R.id.nuevoP:
                 MensajePrincipal("Agregar Nuevo Producto");
                 vg.setMiproducto(-1);
                 fragment = new AgregarProducto();
                 break;
             case R.id.salir:
+                vg.getMyProducts().clear();
                 mGoogleApiClient.connect();
                 mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
@@ -177,6 +223,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
+        for(Producto p : vg.getMyProducts()){
+            db.insertDato(p.getImagenBD(), p.getNombre(), p.getMarca(), p.getPrecio(), p.getDesc(), p.getSupermercado(), p.isComprado());
+        }
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }

@@ -8,6 +8,7 @@ public class VariablesGlobales {
 
     private List<Producto> myProducts = new ArrayList<>();
     private List<String> mySupermercados = new ArrayList<>();
+
     private double Total = 0;
     private double precioactual = 0;
     private boolean mensajeMostrado = true;

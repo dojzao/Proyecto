@@ -16,6 +16,16 @@
             android:title="Crear Nuevo Producto" />
     </group>
 
+    <item android:title="Administrativo"
+        android:id="@+id/Administracion">
+        <menu>
+            <item
+                android:id="@+id/nuevoA"
+                android:icon="@android:drawable/ic_menu_add"
+                android:title="Administradores" />
+        </menu>
+    </item>
+
     <item android:title="Informacion">
         <menu>
             <item
